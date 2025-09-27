@@ -1,0 +1,545 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة موظف جديد - نظام إدارة العلاوات والترفيعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-2">
+                        <i class="fas fa-user-plus text-primary me-3"></i>
+                        إضافة موظف جديد
+                    </h1>
+                    <p class="text-muted mb-0">إضافة موظف جديد إلى النظام مع جميع البيانات الأساسية والوظيفية</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('employees_list') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        العودة للقائمة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alerts-container"></div>
+
+    <!-- Add Employee Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        بيانات الموظف الجديد
+                    </h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="employee-form">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Personal Information Section -->
+                        <div class="section-header mb-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-user text-primary me-2"></i>
+                                البيانات الشخصية
+                            </h5>
+                            <hr class="section-divider">
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <!-- Full Name -->
+                            <div class="col-md-8 mb-3">
+                                <label for="{{ form.full_name.id }}" class="form-label required">
+                                    <i class="fas fa-signature me-2"></i>
+                                    {{ form.full_name.label.text }}
+                                </label>
+                                {{ form.full_name(class="form-control form-control-lg") }}
+                                {% if form.full_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.full_name.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Photo Upload -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-camera me-2"></i>
+                                    صورة الموظف
+                                </label>
+                                <div class="photo-upload-container text-center">
+                                    <div class="photo-preview mb-3">
+                                        <img id="photo_preview" src="{{ url_for('static', filename='images/default-avatar.png') }}" 
+                                             alt="صورة الموظف" class="profile-photo">
+                                    </div>
+                                    {{ form.photo(class="form-control", id="photo_input", style="display: none;") }}
+                                    <button type="button" class="btn btn-outline-primary update-photo-btn">
+                                        <i class="fas fa-upload me-2"></i>
+                                        اختيار صورة
+                                    </button>
+                                    <small class="text-muted d-block mt-2">
+                                        الحد الأقصى: 2MB | الأنواع المدعومة: JPG, PNG, GIF
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Information Section -->
+                        <div class="section-header mb-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-briefcase text-success me-2"></i>
+                                المعلومات الوظيفية
+                            </h5>
+                            <hr class="section-divider">
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <!-- Academic Degree -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.academic_degree.id }}" class="form-label required">
+                                    <i class="fas fa-graduation-cap me-2"></i>
+                                    {{ form.academic_degree.label.text }}
+                                </label>
+                                {{ form.academic_degree(class="form-control form-control-lg") }}
+                                {% if form.academic_degree.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.academic_degree.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Job Class -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.job_class.id }}" class="form-label required">
+                                    <i class="fas fa-tags me-2"></i>
+                                    {{ form.job_class.label.text }}
+                                </label>
+                                {{ form.job_class(class="form-control form-control-lg") }}
+                                {% if form.job_class.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.job_class.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <!-- Job Title -->
+                            <div class="col-md-8 mb-3">
+                                <label for="{{ form.job_title.id }}" class="form-label required">
+                                    <i class="fas fa-id-badge me-2"></i>
+                                    {{ form.job_title.label.text }}
+                                </label>
+                                {{ form.job_title(class="form-control form-control-lg") }}
+                                {% if form.job_title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.job_title.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Job Grade -->
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.job_grade.id }}" class="form-label required">
+                                    <i class="fas fa-layer-group me-2"></i>
+                                    {{ form.job_grade.label.text }}
+                                </label>
+                                {{ form.job_grade(class="form-control form-control-lg") }}
+                                {% if form.job_grade.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.job_grade.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Dates Section -->
+                        <div class="section-header mb-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-calendar-alt text-info me-2"></i>
+                                التواريخ المهمة
+                            </h5>
+                            <hr class="section-divider">
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <!-- Start Date -->
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.start_date.id }}" class="form-label required">
+                                    <i class="fas fa-calendar-plus me-2"></i>
+                                    {{ form.start_date.label.text }}
+                                </label>
+                                {{ form.start_date(class="form-control form-control-lg") }}
+                                {% if form.start_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.start_date.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Last Allowance Date -->
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.last_allowance_date.id }}" class="form-label required">
+                                    <i class="fas fa-calendar-check me-2"></i>
+                                    {{ form.last_allowance_date.label.text }}
+                                </label>
+                                {{ form.last_allowance_date(class="form-control form-control-lg") }}
+                                {% if form.last_allowance_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.last_allowance_date.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">
+                                    آخر تاريخ حصل فيه الموظف على علاوة أو ترفيع
+                                </small>
+                            </div>
+                            
+                            <!-- Last Promotion Date -->
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.last_promotion_date.id }}" class="form-label">
+                                    <i class="fas fa-arrow-up me-2"></i>
+                                    {{ form.last_promotion_date.label.text }}
+                                </label>
+                                {{ form.last_promotion_date(class="form-control form-control-lg") }}
+                                {% if form.last_promotion_date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.last_promotion_date.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">
+                                    اختياري - آخر تاريخ ترفيع للموظف
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Promotion Tracker Section -->
+                        <div class="section-header mb-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-chart-line text-warning me-2"></i>
+                                مؤشر تتبع الترفيع
+                            </h5>
+                            <hr class="section-divider">
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.promotion_tracker.id }}" class="form-label required">
+                                    <i class="fas fa-tachometer-alt me-2"></i>
+                                    {{ form.promotion_tracker.label.text }}
+                                </label>
+                                {{ form.promotion_tracker(class="form-select form-select-lg") }}
+                                {% if form.promotion_tracker.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.promotion_tracker.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        معلومات مؤشر التتبع
+                                    </h6>
+                                    <ul class="mb-0 small">
+                                        <li><strong>للدرجات 10-6:</strong> استخدم X/4 (3 علاوات + 1 ترفيع)</li>
+                                        <li><strong>للدرجات 5-2:</strong> استخدم X/5 (4 علاوات + 1 ترفيع)</li>
+                                        <li><strong>الدرجة الأولى:</strong> علاوات فقط بدون ترفيع</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="confirm_data" required>
+                                        <label class="form-check-label" for="confirm_data">
+                                            أؤكد صحة البيانات المدخلة
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('employees_list') }}" class="btn btn-outline-secondary btn-lg">
+                                            <i class="fas fa-times me-2"></i>
+                                            إلغاء
+                                        </a>
+                                        <button type="submit" class="btn btn-primary btn-lg" id="submit_btn">
+                                            <i class="fas fa-save me-2"></i>
+                                            حفظ الموظف
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-question-circle text-info me-2"></i>
+                        مساعدة في إدخال البيانات
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">البيانات الأساسية:</h6>
+                            <ul class="small text-muted">
+                                <li>الاسم الرباعي واللقب مطلوب</li>
+                                <li>الصورة اختيارية ويمكن إضافتها لاحقاً</li>
+                                <li>جميع الحقول المطلوبة مميزة بعلامة *</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">التواريخ:</h6>
+                            <ul class="small text-muted">
+                                <li>تاريخ المباشرة هو تاريخ بداية العمل</li>
+                                <li>آخر استحقاق للعلاوة يحدد نقطة بداية الحسابات</li>
+                                <li>تاريخ آخر ترفيع اختياري</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.section-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #3498db, transparent);
+    margin: 0;
+}
+
+.form-label.required::after {
+    content: " *";
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.photo-upload-container {
+    position: relative;
+}
+
+.photo-preview {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.profile-photo:hover {
+    border-color: #3498db;
+    transform: scale(1.05);
+}
+
+.update-photo-btn {
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.btn-group .btn {
+    min-width: 120px;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    border-radius: 10px;
+}
+
+.form-check-input:checked {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // تحديث حقول النموذج حسب نوع الوظيفة
+    $('#job_class').on('change', function() {
+        const jobClass = $(this).val().toLowerCase();
+        
+        // اقتراحات للعناوين الوظيفية حسب الصنف
+        const jobTitleSuggestions = {
+            'تدريسي': ['مدرس', 'مدرس مساعد', 'مدرس أول', 'رئيس قسم'],
+            'إداري': ['محاسب', 'سكرتير', 'مدير', 'موظف إداري'],
+            'فني': ['فني حاسوب', 'فني مختبر', 'فني صيانة', 'فني كهرباء']
+        };
+        
+        if (jobTitleSuggestions[jobClass]) {
+            const suggestions = jobTitleSuggestions[jobClass];
+            let options = '<option value="">اختر العنوان الوظيفي</option>';
+            
+            suggestions.forEach(function(title) {
+                options += `<option value="${title}">${title}</option>`;
+            });
+            
+            // إذا كان هناك حقل select للعنوان الوظيفي
+            if ($('#job_title_select').length) {
+                $('#job_title_select').html(options);
+            }
+        }
+    });
+    
+    // التحقق من تطابق التواريخ
+    $('#start_date, #last_allowance_date').on('change', function() {
+        const startDate = new Date($('#start_date').val());
+        const lastAllowanceDate = new Date($('#last_allowance_date').val());
+        
+        if (startDate && lastAllowanceDate && lastAllowanceDate < startDate) {
+            showAlert('تاريخ آخر استحقاق لا يمكن أن يكون قبل تاريخ المباشرة', 'error');
+            $('#last_allowance_date').addClass('is-invalid');
+        } else {
+            $('#last_allowance_date').removeClass('is-invalid');
+        }
+    });
+    
+    // تحديث مؤشر التتبع حسب الدرجة الوظيفية
+    $('#job_grade').on('change', function() {
+        const grade = parseInt($(this).val());
+        const trackerSelect = $('#promotion_tracker');
+        
+        if (grade >= 6 && grade <= 10) {
+            // للدرجات 10-6: استخدم X/4
+            trackerSelect.find('option').hide();
+            trackerSelect.find('option[value^="0/4"], option[value^="1/4"], option[value^="2/4"], option[value^="3/4"]').show();
+            trackerSelect.val('0/4');
+        } else if (grade >= 2 && grade <= 5) {
+            // للدرجات 5-2: استخدم X/5
+            trackerSelect.find('option').hide();
+            trackerSelect.find('option[value^="0/5"], option[value^="1/5"], option[value^="2/5"], option[value^="3/5"], option[value^="4/5"]').show();
+            trackerSelect.val('0/5');
+        } else if (grade === 1) {
+            // الدرجة الأولى: علاوات فقط
+            showAlert('الدرجة الأولى تحتوي على علاوات فقط بدون ترفيع', 'info');
+            trackerSelect.val('0/4'); // قيمة افتراضية
+        }
+    });
+    
+    // معاينة الصورة
+    $('#photo_input').on('change', function() {
+        const file = this.files[0];
+        
+        if (file) {
+            // التحقق من حجم الملف (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showAlert('حجم الصورة يجب أن يكون أقل من 2 ميجابايت', 'error');
+                $(this).val('');
+                return;
+            }
+            
+            // التحقق من نوع الملف
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showAlert('نوع الملف غير مدعوم. يرجى اختيار صورة JPG أو PNG أو GIF', 'error');
+                $(this).val('');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#photo_preview').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // تفعيل/تعطيل زر الحفظ
+    $('#confirm_data').on('change', function() {
+        $('#submit_btn').prop('disabled', !$(this).is(':checked'));
+    });
+    
+    // تعطيل زر الحفظ في البداية
+    $('#submit_btn').prop('disabled', true);
+    
+    // حفظ حالة النموذج في التخزين المحلي
+    $('#employee-form input, #employee-form select').on('change', function() {
+        saveFormState($('#employee-form'));
+    });
+    
+    // استعادة حالة النموذج
+    restoreFormState($('#employee-form'));
+});
+</script>
+{% endblock %}

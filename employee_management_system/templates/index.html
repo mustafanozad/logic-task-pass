@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}الصفحة الرئيسية - نظام إدارة العلاوات والترفيعات{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-gradient-primary text-white py-5 mb-5 rounded-4 shadow-lg">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-rocket me-3"></i>
+                    مرحباً بك في نظام إدارة العلاوات والترفيعات
+                </h1>
+                <p class="lead fs-5 mb-4">
+                    نظام شامل ومتطور لأتمتة وحوسبة العمليات المعقدة المتعلقة بحساب العلاوات السنوية والترفيعات الوظيفية
+                    مع محرك ذكي للحسابات التلقائية وواجهة عصرية سهلة الاستخدام
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('add_employee') }}" class="btn btn-light btn-lg px-4 py-2">
+                        <i class="fas fa-user-plus me-2"></i>
+                        إضافة موظف جديد
+                    </a>
+                    <a href="{{ url_for('employees_list') }}" class="btn btn-outline-light btn-lg px-4 py-2">
+                        <i class="fas fa-users me-2"></i>
+                        عرض الموظفين
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-users-cog display-1 opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-5">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stat-card bg-primary text-white h-100 shadow-lg border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon me-4">
+                    <i class="fas fa-users fa-3x"></i>
+                </div>
+                <div>
+                    <h2 class="card-title fw-bold mb-1">{{ stats.total_employees }}</h2>
+                    <p class="card-text fs-6 mb-0">إجمالي الموظفين</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stat-card bg-success text-white h-100 shadow-lg border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon me-4">
+                    <i class="fas fa-user-check fa-3x"></i>
+                </div>
+                <div>
+                    <h2 class="card-title fw-bold mb-1">{{ stats.active_employees }}</h2>
+                    <p class="card-text fs-6 mb-0">الموظفين النشطين</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stat-card bg-warning text-white h-100 shadow-lg border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon me-4">
+                    <i class="fas fa-arrow-up fa-3x"></i>
+                </div>
+                <div>
+                    <h2 class="card-title fw-bold mb-1">{{ stats.pending_promotions }}</h2>
+                    <p class="card-text fs-6 mb-0">ترفيعات معلقة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stat-card bg-info text-white h-100 shadow-lg border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="stat-icon me-4">
+                    <i class="fas fa-calendar-alt fa-3x"></i>
+                </div>
+                <div>
+                    <h2 class="card-title fw-bold mb-1">{{ stats.recent_events|length }}</h2>
+                    <p class="card-text fs-6 mb-0">الأحداث الأخيرة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="section-title mb-4">
+            <i class="fas fa-bolt me-2 text-primary"></i>
+            الإجراءات السريعة
+        </h2>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card action-card h-100 shadow-sm border-0 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="action-icon mb-3">
+                    <i class="fas fa-user-plus fa-4x text-primary"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">إضافة موظف جديد</h4>
+                <p class="card-text text-muted mb-4">
+                    إضافة موظف جديد إلى النظام مع جميع البيانات الأساسية والوظيفية
+                </p>
+                <a href="{{ url_for('add_employee') }}" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة موظف
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card action-card h-100 shadow-sm border-0 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="action-icon mb-3">
+                    <i class="fas fa-calendar-plus fa-4x text-success"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">إضافة حدث مهني</h4>
+                <p class="card-text text-muted mb-4">
+                    إضافة أحداث مهنية مثل كتب الشكر، العقوبات، الإجازات والشهادات
+                </p>
+                <a href="{{ url_for('add_event') }}" class="btn btn-success btn-lg px-4">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة حدث
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card action-card h-100 shadow-sm border-0 hover-lift">
+            <div class="card-body text-center p-4">
+                <div class="action-icon mb-3">
+                    <i class="fas fa-search fa-4x text-info"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">البحث والاستعلام</h4>
+                <p class="card-text text-muted mb-4">
+                    البحث عن الموظفين وعرض ملفاتهم الشخصية والمسار الوظيفي
+                </p>
+                <a href="{{ url_for('employees_list') }}" class="btn btn-info btn-lg px-4">
+                    <i class="fas fa-search me-2"></i>
+                    عرض الموظفين
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Events -->
+{% if stats.recent_events %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="section-title mb-4">
+            <i class="fas fa-history me-2 text-primary"></i>
+            الأحداث المهنية الأخيرة
+        </h2>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-user me-2"></i>الموظف</th>
+                                <th><i class="fas fa-tag me-2"></i>نوع الحدث</th>
+                                <th><i class="fas fa-calendar me-2"></i>التاريخ</th>
+                                <th><i class="fas fa-file-alt me-2"></i>الوصف</th>
+                                <th><i class="fas fa-cog me-2"></i>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in stats.recent_events %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <strong>{{ event.employee.full_name }}</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if 'commendation' in event.event_type else 'warning' if 'penalty' in event.event_type else 'info' }} fs-6">
+                                        {{ event.get_event_types()[event.event_type] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar-day me-2 text-muted"></i>
+                                    {{ event.event_date.strftime('%d/%m/%Y') }}
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ event.description[:50] + '...' if event.description and event.description|length > 50 else event.description or 'لا يوجد وصف' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('employee_profile', employee_id=event.employee.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>
+                                        عرض الملف
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('events_list') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>
+                        عرض جميع الأحداث
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="section-title mb-4">
+            <i class="fas fa-star me-2 text-primary"></i>
+            مميزات النظام
+        </h2>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card feature-card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-robot fa-3x text-primary"></i>
+                </div>
+                <h5 class="card-title fw-bold">محرك ذكي للحسابات</h5>
+                <p class="card-text text-muted">
+                    حساب تلقائي ودقيق للعلاوات والترفيعات مع تطبيق تأثير الأحداث المهنية
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card feature-card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-chart-line fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title fw-bold">تتبع المسار الوظيفي</h5>
+                <p class="card-text text-muted">
+                    متابعة شاملة لجميع التطورات الوظيفية والأحداث المهنية للموظفين
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card feature-card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-mobile-alt fa-3x text-info"></i>
+                </div>
+                <h5 class="card-title fw-bold">واجهة عصرية ومتجاوبة</h5>
+                <p class="card-text text-muted">
+                    تصميم حديث وجذاب يعمل على جميع الأجهزة مع تجربة مستخدم ممتازة
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.action-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.feature-card {
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.avatar-sm {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
