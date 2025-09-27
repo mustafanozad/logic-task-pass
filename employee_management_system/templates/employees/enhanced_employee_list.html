@@ -1,0 +1,481 @@
+{% extends "enhanced_base.html" %}
+
+{% block title %}قائمة الموظفين - نظام إدارة العلاوات والترفيعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="card-title mb-0">
+                                <i class="fas fa-users fa-2x me-3"></i>
+                                قائمة الموظفين
+                            </h2>
+                            <p class="mb-0 mt-2">إدارة وعرض جميع الموظفين في النظام</p>
+                        </div>
+                        <a href="{{ url_for('add_employee') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>
+                            إضافة موظف جديد
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg filter-section">
+                <div class="card-header bg-gradient-secondary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-filter me-2"></i>
+                        فلترة وبحث الموظفين
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="GET" id="filterForm">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="search" class="form-label">
+                                    <i class="fas fa-search me-2 text-primary"></i>
+                                    البحث بالاسم
+                                </label>
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       value="{{ current_filters.search }}" placeholder="ابحث عن موظف...">
+                            </div>
+                            
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="job_class" class="form-label">
+                                    <i class="fas fa-briefcase me-2 text-success"></i>
+                                    الصنف الوظيفي
+                                </label>
+                                <select class="form-select" id="job_class" name="job_class">
+                                    <option value="">جميع الأصناف</option>
+                                    {% for job_class in job_classes %}
+                                    <option value="{{ job_class }}" {% if current_filters.job_class == job_class %}selected{% endif %}>
+                                        {{ job_class }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <i class="fas fa-user-check me-2 text-info"></i>
+                                    الحالة
+                                </label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="">جميع الحالات</option>
+                                    <option value="active" {% if current_filters.status == 'active' %}selected{% endif %}>نشط</option>
+                                    <option value="inactive" {% if current_filters.status == 'inactive' %}selected{% endif %}>غير نشط</option>
+                                    <option value="retired" {% if current_filters.status == 'retired' %}selected{% endif %}>متقاعد</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="sort" class="form-label">
+                                    <i class="fas fa-sort me-2 text-warning"></i>
+                                    الترتيب
+                                </label>
+                                <select class="form-select" id="sort" name="sort">
+                                    <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>الاسم</option>
+                                    <option value="start_date" {% if current_filters.sort == 'start_date' %}selected{% endif %}>تاريخ المباشرة</option>
+                                    <option value="grade" {% if current_filters.sort == 'grade' %}selected{% endif %}>الدرجة الوظيفية</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-12 mb-3">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary flex-fill">
+                                        <i class="fas fa-search me-1"></i>
+                                        بحث
+                                    </button>
+                                    <a href="{{ url_for('employee_list') }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ employees|length }}</h3>
+                    <p class="mb-0">إجمالي النتائج</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ employees|selectattr('status.value', 'equalto', 'active')|list|length }}</h3>
+                    <p class="mb-0">موظف نشط</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-briefcase fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ job_classes|length }}</h3>
+                    <p class="mb-0">صنف وظيفي</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white shadow-lg">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ employees|selectattr('next_entitlement')|list|length }}</h3>
+                    <p class="mb-0">استحقاق قادم</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        قائمة الموظفين ({{ employees|length }} موظف)
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    {% if employees %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="20%">
+                                        <i class="fas fa-user me-2"></i>
+                                        الموظف
+                                    </th>
+                                    <th width="15%">
+                                        <i class="fas fa-briefcase me-2"></i>
+                                        الوظيفة
+                                    </th>
+                                    <th width="10%">
+                                        <i class="fas fa-layer-group me-2"></i>
+                                        الدرجة/المرحلة
+                                    </th>
+                                    <th width="12%">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        تاريخ المباشرة
+                                    </th>
+                                    <th width="12%">
+                                        <i class="fas fa-clock me-2"></i>
+                                        الخدمة الفعلية
+                                    </th>
+                                    <th width="10%">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        الحالة
+                                    </th>
+                                    <th width="16%">
+                                        <i class="fas fa-cogs me-2"></i>
+                                        الإجراءات
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in employees %}
+                                <tr class="employee-row" data-employee-id="{{ employee.id }}">
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if employee.photo_path %}
+                                                <img src="{{ url_for('static', filename=employee.photo_path) }}" 
+                                                     class="rounded-circle me-3" width="50" height="50" alt="صورة الموظف">
+                                            {% else %}
+                                                <div class="bg-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <strong class="d-block">{{ employee.full_name }}</strong>
+                                                <small class="text-muted">{{ employee.academic_degree }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong class="d-block">{{ employee.job_title }}</strong>
+                                            <small class="text-muted">{{ employee.job_class }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary fs-6">
+                                            الدرجة {{ employee.job_grade }}
+                                        </span>
+                                        <br>
+                                        <span class="badge bg-info fs-6 mt-1">
+                                            المرحلة {{ employee.current_stage }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ employee.start_date.strftime('%Y-%m-%d') }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="text-success fw-bold">
+                                            {{ employee.effective_service_years.years }} سنة
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ employee.effective_service_years.months }} شهر، {{ employee.effective_service_years.days }} يوم
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if employee.status.value == 'active' %}
+                                            <span class="badge bg-success fs-6">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                نشط
+                                            </span>
+                                        {% elif employee.status.value == 'inactive' %}
+                                            <span class="badge bg-warning fs-6">
+                                                <i class="fas fa-pause-circle me-1"></i>
+                                                غير نشط
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary fs-6">
+                                                <i class="fas fa-user-times me-1"></i>
+                                                متقاعد
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('employee_profile', employee_id=employee.id) }}" 
+                                               class="btn btn-sm btn-primary" title="عرض الملف">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('edit_employee', employee_id=employee.id) }}" 
+                                               class="btn btn-sm btn-warning" title="تعديل">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-info" 
+                                                    onclick="showNextEntitlement({{ employee.id }})" title="الاستحقاق القادم">
+                                                <i class="fas fa-calendar-check"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">لا توجد نتائج</h4>
+                        <p class="text-muted">لم يتم العثور على موظفين يطابقون معايير البحث</p>
+                        <a href="{{ url_for('add_employee') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>
+                            إضافة موظف جديد
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Next Entitlement -->
+<div class="modal fade" id="nextEntitlementModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    الاستحقاق القادم
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="nextEntitlementContent">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+                    <p class="mt-2">جاري التحميل...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.employee-row {
+    transition: all 0.3s ease;
+}
+
+.employee-row:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    transform: translateX(-5px);
+}
+
+.filter-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.btn-group .btn {
+    margin: 0 1px;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+}
+
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // البحث التلقائي
+    const searchInput = document.getElementById('search');
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            document.getElementById('filterForm').submit();
+        }, 500);
+    });
+    
+    // تحديث الفلاتر تلقائياً
+    const filterSelects = document.querySelectorAll('#job_class, #status, #sort');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+});
+
+function showNextEntitlement(employeeId) {
+    const modal = new bootstrap.Modal(document.getElementById('nextEntitlementModal'));
+    const content = document.getElementById('nextEntitlementContent');
+    
+    // إظهار المودال مع رسالة التحميل
+    modal.show();
+    content.innerHTML = `
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+            <p class="mt-2">جاري تحميل معلومات الاستحقاق...</p>
+        </div>
+    `;
+    
+    // جلب معلومات الاستحقاق
+    fetch(`/api/employees/${employeeId}/next-entitlement`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const entitlement = data.entitlement;
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-${entitlement.type_arabic === 'علاوة' ? 'plus' : 'arrow-up'} fa-3x mb-3"></i>
+                                    <h3>${entitlement.type_arabic}</h3>
+                                    <p class="mb-0">${entitlement.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                                    <h4>${entitlement.date}</h4>
+                                    <p class="mb-0">
+                                        ${entitlement.days_remaining > 0 ? 
+                                            `بعد ${entitlement.days_remaining} يوم` : 
+                                            'مستحق الآن'
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>التفاصيل:</strong> ${entitlement.details}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        خطأ في تحميل معلومات الاستحقاق: ${data.error}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            content.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    خطأ في الاتصال بالخادم
+                </div>
+            `;
+        });
+}
+</script>
+{% endblock %}
+
