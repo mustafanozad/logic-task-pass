@@ -1,0 +1,27 @@
+# متطلبات نظام إدارة العلاوات والترفيعات
+# Employee Promotion Management System Requirements
+
+# مكتبات Python الأساسية
+python-dateutil>=2.8.2
+Pillow>=9.0.0
+
+# مكتبات التقارير والتصدير
+openpyxl>=3.0.9
+matplotlib>=3.5.0
+reportlab>=3.6.0
+
+# مكتبات إضافية للواجهة
+ttkthemes>=3.2.2
+
+# مكتبات التطوير والاختبار (اختيارية)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# ملاحظات:
+# - tkinter مدمج مع Python
+# - sqlite3 مدمج مع Python
+# - datetime مدمج مع Python
+# - logging مدمج مع Python
+# - json مدمج مع Python
+# - os مدمج مع Python
+# - sys مدمج مع Python
