@@ -1,0 +1,408 @@
+{% extends "enhanced_base.html" %}
+
+{% block title %}إضافة موظف جديد - نظام إدارة العلاوات والترفيعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-user-plus fa-2x me-3"></i>
+                        إضافة موظف جديد
+                    </h2>
+                    <p class="mb-0 mt-2">إدخال بيانات موظف جديد في النظام</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="addEmployeeForm">
+                        <div class="row">
+                            <!-- الصورة الشخصية -->
+                            <div class="col-lg-3 mb-4">
+                                <div class="text-center">
+                                    <div class="photo-upload-container">
+                                        <div class="photo-preview" id="photoPreview">
+                                            <i class="fas fa-user fa-4x text-muted"></i>
+                                            <p class="mt-2 text-muted">صورة الموظف</p>
+                                        </div>
+                                        <input type="file" class="form-control d-none" id="photo" name="photo" accept="image/*">
+                                        <button type="button" class="btn btn-outline-primary mt-3" onclick="document.getElementById('photo').click()">
+                                            <i class="fas fa-camera me-2"></i>اختيار صورة
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- البيانات الأساسية -->
+                            <div class="col-lg-9">
+                                <div class="row">
+                                    <!-- الاسم الرباعي واللقب -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="full_name" class="form-label">
+                                            <i class="fas fa-user me-2 text-primary"></i>
+                                            الاسم الرباعي واللقب <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="full_name" name="full_name" required>
+                                    </div>
+
+                                    <!-- تاريخ المباشرة -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="start_date" class="form-label">
+                                            <i class="fas fa-calendar-alt me-2 text-success"></i>
+                                            تاريخ المباشرة بالوظيفة <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="date" class="form-control form-control-lg" id="start_date" name="start_date" required>
+                                    </div>
+
+                                    <!-- تاريخ آخر استحقاق للعلاوة -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="last_allowance_date" class="form-label">
+                                            <i class="fas fa-calendar-check me-2 text-info"></i>
+                                            تاريخ آخر استحقاق للعلاوة <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="date" class="form-control form-control-lg" id="last_allowance_date" name="last_allowance_date" required>
+                                    </div>
+
+                                    <!-- آخر تاريخ استحقاق للترفيع -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="last_promotion_date" class="form-label">
+                                            <i class="fas fa-arrow-up me-2 text-warning"></i>
+                                            آخر تاريخ استحقاق للترفيع
+                                        </label>
+                                        <input type="date" class="form-control form-control-lg" id="last_promotion_date" name="last_promotion_date">
+                                    </div>
+
+                                    <!-- مؤشر تتبع العلاوة -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="promotion_tracker" class="form-label">
+                                            <i class="fas fa-chart-line me-2 text-primary"></i>
+                                            مؤشر تتبع العلاوة <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select form-select-lg" id="promotion_tracker" name="promotion_tracker" required>
+                                            <option value="">اختر المؤشر</option>
+                                            <optgroup label="للدرجات 10-6">
+                                                <option value="0/4">0/4</option>
+                                                <option value="1/4">1/4</option>
+                                                <option value="2/4">2/4</option>
+                                                <option value="3/4">3/4</option>
+                                            </optgroup>
+                                            <optgroup label="للدرجات 5-2">
+                                                <option value="0/5">0/5</option>
+                                                <option value="1/5">1/5</option>
+                                                <option value="2/5">2/5</option>
+                                                <option value="3/5">3/5</option>
+                                                <option value="4/5">4/5</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+
+                                    <!-- الشهادة العلمية -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="academic_degree" class="form-label">
+                                            <i class="fas fa-graduation-cap me-2 text-success"></i>
+                                            الشهادة العلمية <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="academic_degree" name="academic_degree" 
+                                               placeholder="مثال: بكالوريوس، ماجستير، دكتوراه" required>
+                                    </div>
+
+                                    <!-- صنف الوظيفة -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="job_class" class="form-label">
+                                            <i class="fas fa-briefcase me-2 text-info"></i>
+                                            صنف الوظيفة <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="job_class" name="job_class" 
+                                               placeholder="مثال: تدريسي، إداري" required>
+                                    </div>
+
+                                    <!-- العنوان الوظيفي -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="job_title" class="form-label">
+                                            <i class="fas fa-id-badge me-2 text-warning"></i>
+                                            العنوان الوظيفي <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="job_title" name="job_title" 
+                                               placeholder="مثال: مدرس، مدرس مساعد، موظف إداري" required>
+                                    </div>
+
+                                    <!-- الدرجة الوظيفية -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="job_grade" class="form-label">
+                                            <i class="fas fa-layer-group me-2 text-primary"></i>
+                                            الدرجة الوظيفية <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" class="form-control form-control-lg" id="job_grade" name="job_grade" 
+                                               min="1" max="10" placeholder="من 1 إلى 10" required>
+                                    </div>
+
+                                    <!-- المرحلة الحالية -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="current_stage" class="form-label">
+                                            <i class="fas fa-stairs me-2 text-success"></i>
+                                            المرحلة الحالية <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" class="form-control form-control-lg" id="current_stage" name="current_stage" 
+                                               min="1" max="10" value="1" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- أزرار الإجراءات -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('employee_list') }}" class="btn btn-secondary btn-lg">
+                                        <i class="fas fa-arrow-right me-2"></i>
+                                        العودة للقائمة
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-warning btn-lg me-2">
+                                            <i class="fas fa-undo me-2"></i>
+                                            إعادة تعيين
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fas fa-save me-2"></i>
+                                            حفظ الموظف
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- معلومات مساعدة -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        معلومات مساعدة
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-chart-line me-2 text-primary"></i>مؤشر تتبع العلاوة</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>للدرجات 10-6:</strong> يستخدم نظام 4/0 إلى 4/3 (3 علاوات + ترفيع)</li>
+                                <li><strong>للدرجات 5-2:</strong> يستخدم نظام 5/0 إلى 5/4 (4 علاوات + ترفيع)</li>
+                                <li><strong>الدرجة الأولى:</strong> علاوات فقط بدون ترفيع</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-calendar-alt me-2 text-success"></i>التواريخ المهمة</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>تاريخ المباشرة:</strong> تاريخ بدء العمل الفعلي</li>
+                                <li><strong>آخر استحقاق للعلاوة:</strong> نقطة البداية لحساب الاستحقاقات</li>
+                                <li><strong>آخر ترفيع:</strong> اختياري، يُستخدم للمتابعة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.photo-upload-container {
+    position: relative;
+}
+
+.photo-preview {
+    width: 200px;
+    height: 200px;
+    border: 3px dashed #dee2e6;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.photo-preview:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.form-control-lg, .form-select-lg {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.form-label i {
+    width: 20px;
+}
+
+.text-danger {
+    font-weight: bold;
+}
+
+.card-header h2 {
+    font-size: 1.75rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+}
+
+.list-unstyled li {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.list-unstyled li:last-child {
+    border-bottom: none;
+}
+
+optgroup {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+option {
+    font-weight: normal;
+    color: var(--dark-color);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // معالجة رفع الصورة
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                photoPreview.innerHTML = `<img src="${e.target.result}" alt="صورة الموظف">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // النقر على منطقة الصورة لاختيار ملف
+    photoPreview.addEventListener('click', function() {
+        photoInput.click();
+    });
+    
+    // تحديث المرحلة الحالية حسب الدرجة
+    const gradeInput = document.getElementById('job_grade');
+    const stageInput = document.getElementById('current_stage');
+    
+    gradeInput.addEventListener('change', function() {
+        const grade = parseInt(this.value);
+        if (grade === 1) {
+            stageInput.max = 11;
+        } else {
+            stageInput.max = 5;
+        }
+        
+        // إعادة تعيين القيمة إذا كانت أكبر من الحد الأقصى
+        if (parseInt(stageInput.value) > parseInt(stageInput.max)) {
+            stageInput.value = 1;
+        }
+    });
+    
+    // تحديث مؤشر التتبع حسب الدرجة
+    const trackerSelect = document.getElementById('promotion_tracker');
+    
+    gradeInput.addEventListener('change', function() {
+        const grade = parseInt(this.value);
+        const currentValue = trackerSelect.value;
+        
+        // إخفاء/إظهار الخيارات حسب الدرجة
+        const options = trackerSelect.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === '') return; // تجاهل الخيار الفارغ
+            
+            if (grade >= 6 && grade <= 10) {
+                // إظهار خيارات 4/X
+                option.style.display = option.value.includes('/4') ? 'block' : 'none';
+            } else if (grade >= 2 && grade <= 5) {
+                // إظهار خيارات 5/X
+                option.style.display = option.value.includes('/5') ? 'block' : 'none';
+            } else if (grade === 1) {
+                // للدرجة الأولى، لا يوجد مؤشر ترفيع
+                option.style.display = 'none';
+            }
+        });
+        
+        // إعادة تعيين القيمة إذا لم تعد صالحة
+        if (grade >= 6 && grade <= 10 && !currentValue.includes('/4')) {
+            trackerSelect.value = '0/4';
+        } else if (grade >= 2 && grade <= 5 && !currentValue.includes('/5')) {
+            trackerSelect.value = '0/5';
+        } else if (grade === 1) {
+            trackerSelect.value = '';
+        }
+    });
+    
+    // تحديد تاريخ اليوم كقيمة افتراضية
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').value = today;
+    document.getElementById('last_allowance_date').value = today;
+    
+    // التحقق من صحة النموذج
+    const form = document.getElementById('addEmployeeForm');
+    form.addEventListener('submit', function(e) {
+        const grade = parseInt(document.getElementById('job_grade').value);
+        const tracker = document.getElementById('promotion_tracker').value;
+        
+        if (grade >= 2 && grade <= 10 && !tracker) {
+            e.preventDefault();
+            alert('يرجى اختيار مؤشر تتبع العلاوة المناسب للدرجة الوظيفية');
+            return false;
+        }
+        
+        // إظهار رسالة تحميل
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الحفظ...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}
+

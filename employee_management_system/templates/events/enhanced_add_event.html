@@ -1,0 +1,554 @@
+{% extends "enhanced_base.html" %}
+
+{% block title %}إضافة حدث مهني - نظام إدارة العلاوات والترفيعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-success text-white">
+                    <h2 class="card-title mb-0">
+                        <i class="fas fa-plus fa-2x me-3"></i>
+                        إضافة حدث مهني
+                    </h2>
+                    <p class="mb-0 mt-2">إضافة حدث مهني يؤثر على المسار الوظيفي للموظفين</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-body p-4">
+                    <form method="POST" id="addEventForm">
+                        <!-- Employee Selection -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h4 class="card-title mb-0">
+                                            <i class="fas fa-users me-2 text-primary"></i>
+                                            تحديد الموظفين
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                                    <label class="form-check-label fw-bold" for="selectAll">
+                                                        <i class="fas fa-check-double me-2"></i>
+                                                        تحديد جميع الموظفين
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" id="employeeSearch" 
+                                                       placeholder="البحث عن موظف...">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="employee-selection">
+                                            {% for job_class, employees in employees_by_class.items() %}
+                                            <div class="job-class-section mb-4">
+                                                <h5 class="text-primary border-bottom pb-2">
+                                                    <i class="fas fa-briefcase me-2"></i>
+                                                    {{ job_class }}
+                                                    <span class="badge bg-primary ms-2">{{ employees|length }}</span>
+                                                </h5>
+                                                <div class="row">
+                                                    {% for employee in employees %}
+                                                    <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+                                                        <div class="form-check employee-item">
+                                                            <input class="form-check-input employee-checkbox" 
+                                                                   type="checkbox" 
+                                                                   name="employee_ids" 
+                                                                   value="{{ employee.id }}" 
+                                                                   id="emp_{{ employee.id }}">
+                                                            <label class="form-check-label w-100" for="emp_{{ employee.id }}">
+                                                                <div class="d-flex align-items-center">
+                                                                    {% if employee.photo_path %}
+                                                                        <img src="{{ url_for('static', filename=employee.photo_path) }}" 
+                                                                             class="rounded-circle me-2" width="30" height="30">
+                                                                    {% else %}
+                                                                        <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                                                             style="width: 30px; height: 30px;">
+                                                                            <i class="fas fa-user text-white" style="font-size: 12px;"></i>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                    <div class="flex-grow-1">
+                                                                        <div class="fw-bold">{{ employee.full_name }}</div>
+                                                                        <small class="text-muted">{{ employee.job_title }}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h4 class="card-title mb-0">
+                                            <i class="fas fa-calendar-alt me-2 text-success"></i>
+                                            تفاصيل الحدث
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="event_type" class="form-label">
+                                                    <i class="fas fa-tag me-2 text-primary"></i>
+                                                    نوع الحدث <span class="text-danger">*</span>
+                                                </label>
+                                                <select class="form-select form-select-lg" id="event_type" name="event_type" required>
+                                                    <option value="">اختر نوع الحدث</option>
+                                                    <optgroup label="الأحداث الإيجابية">
+                                                        <option value="commendation">كتاب شكر وتقدير</option>
+                                                        <option value="higher_degree">الحصول على شهادة أعلى</option>
+                                                    </optgroup>
+                                                    <optgroup label="الأحداث السلبية">
+                                                        <option value="notice_penalty">عقوبة لفت نظر</option>
+                                                        <option value="warning_penalty">عقوبة إنذار</option>
+                                                        <option value="reprimand_penalty">عقوبة توبيخ</option>
+                                                    </optgroup>
+                                                    <optgroup label="أحداث تجميد الخدمة">
+                                                        <option value="unpaid_leave">إجازة بدون راتب</option>
+                                                        <option value="disability_care_leave">إجازة رعاية المعاقين</option>
+                                                        <option value="five_year_leave">إجازة الخمس سنوات</option>
+                                                        <option value="maternity_leave">إجازة أمومة</option>
+                                                    </optgroup>
+                                                    <optgroup label="أحداث أخرى">
+                                                        <option value="custom_event">حدث مخصص</option>
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label for="event_date" class="form-label">
+                                                    <i class="fas fa-calendar me-2 text-info"></i>
+                                                    تاريخ الحدث <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="date" class="form-control form-control-lg" id="event_date" name="event_date" required>
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label for="document_number" class="form-label">
+                                                    <i class="fas fa-file-alt me-2 text-warning"></i>
+                                                    رقم الكتاب الرسمي
+                                                </label>
+                                                <input type="text" class="form-control form-control-lg" id="document_number" name="document_number">
+                                            </div>
+                                            
+                                            <div class="col-md-6 mb-3">
+                                                <label for="document_date" class="form-label">
+                                                    <i class="fas fa-calendar-check me-2 text-secondary"></i>
+                                                    تاريخ الكتاب الرسمي
+                                                </label>
+                                                <input type="date" class="form-control form-control-lg" id="document_date" name="document_date">
+                                            </div>
+                                            
+                                            <div class="col-12 mb-3">
+                                                <label for="notes" class="form-label">
+                                                    <i class="fas fa-sticky-note me-2 text-info"></i>
+                                                    ملاحظات
+                                                </label>
+                                                <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                                          placeholder="ملاحظات إضافية حول الحدث..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Specific Fields -->
+                        <div class="row mb-4" id="eventSpecificFields" style="display: none;">
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h4 class="card-title mb-0">
+                                            <i class="fas fa-cogs me-2 text-primary"></i>
+                                            تفاصيل خاصة بالحدث
+                                        </h4>
+                                    </div>
+                                    <div class="card-body" id="specificFieldsContent">
+                                        <!-- سيتم ملء هذا القسم ديناميكياً -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('event_list') }}" class="btn btn-secondary btn-lg">
+                                        <i class="fas fa-arrow-right me-2"></i>
+                                        العودة للقائمة
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-warning btn-lg me-2">
+                                            <i class="fas fa-undo me-2"></i>
+                                            إعادة تعيين
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fas fa-save me-2"></i>
+                                            حفظ الحدث
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        دليل الأحداث المهنية
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-thumbs-up me-2 text-success"></i>الأحداث الإيجابية</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>كتاب شكر وتقدير:</strong> يقلص مدة الاستحقاق (1-6 أشهر)</li>
+                                <li><strong>شهادة أعلى:</strong> يقلص مدة الاستحقاق بـ 12 شهر (Step)</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-thumbs-down me-2 text-danger"></i>الأحداث السلبية</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>لفت نظر:</strong> يضيف 3 أشهر لمدة الاستحقاق</li>
+                                <li><strong>إنذار:</strong> يضيف 6 أشهر لمدة الاستحقاق</li>
+                                <li><strong>توبيخ:</strong> يضيف 12 شهر لمدة الاستحقاق</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.employee-item {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.employee-item:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.employee-item input:checked + label {
+    background-color: rgba(102, 126, 234, 0.1);
+    border-radius: 6px;
+}
+
+.job-class-section {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    background: white;
+}
+
+.form-select-lg, .form-control-lg {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
+
+.card {
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
+
+.list-unstyled li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.list-unstyled li:last-child {
+    border-bottom: none;
+}
+
+#employeeSearch {
+    border-radius: 25px;
+    padding: 0.75rem 1rem;
+}
+
+.employee-selection {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    background: white;
+}
+
+.specific-field {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تحديد/إلغاء تحديد جميع الموظفين
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const employeeCheckboxes = document.querySelectorAll('.employee-checkbox');
+    
+    selectAllCheckbox.addEventListener('change', function() {
+        employeeCheckboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+    
+    // تحديث حالة "تحديد الكل" عند تغيير الموظفين الفرديين
+    employeeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const checkedCount = document.querySelectorAll('.employee-checkbox:checked').length;
+            const totalCount = employeeCheckboxes.length;
+            
+            selectAllCheckbox.checked = checkedCount === totalCount;
+            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+        });
+    });
+    
+    // البحث في الموظفين
+    const searchInput = document.getElementById('employeeSearch');
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const employeeItems = document.querySelectorAll('.employee-item');
+        
+        employeeItems.forEach(item => {
+            const employeeName = item.querySelector('label .fw-bold').textContent.toLowerCase();
+            const jobTitle = item.querySelector('label .text-muted').textContent.toLowerCase();
+            
+            if (employeeName.includes(searchTerm) || jobTitle.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+    
+    // معالجة تغيير نوع الحدث
+    const eventTypeSelect = document.getElementById('event_type');
+    const specificFieldsContainer = document.getElementById('eventSpecificFields');
+    const specificFieldsContent = document.getElementById('specificFieldsContent');
+    
+    eventTypeSelect.addEventListener('change', function() {
+        const eventType = this.value;
+        
+        if (eventType) {
+            specificFieldsContainer.style.display = 'block';
+            generateSpecificFields(eventType);
+        } else {
+            specificFieldsContainer.style.display = 'none';
+        }
+    });
+    
+    // تحديد تاريخ اليوم كقيمة افتراضية
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('event_date').value = today;
+    document.getElementById('document_date').value = today;
+});
+
+function generateSpecificFields(eventType) {
+    const content = document.getElementById('specificFieldsContent');
+    let html = '';
+    
+    switch (eventType) {
+        case 'commendation':
+            html = `
+                <div class="specific-field">
+                    <h6><i class="fas fa-clock me-2 text-success"></i>مدة التقليص</h6>
+                    <select class="form-select" name="reduction_months" required>
+                        <option value="">اختر مدة التقليص</option>
+                        <option value="1">شهر واحد</option>
+                        <option value="2">شهران</option>
+                        <option value="3">3 أشهر</option>
+                        <option value="4">4 أشهر</option>
+                        <option value="5">5 أشهر</option>
+                        <option value="6">6 أشهر</option>
+                    </select>
+                    <small class="text-muted">الحد الأقصى 3 كتب شكر سنوياً، و2 كتب شكر 6 أشهر طوال المسيرة</small>
+                </div>
+            `;
+            break;
+            
+        case 'higher_degree':
+            html = `
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">الصنف الوظيفي الجديد</label>
+                            <input type="text" class="form-control" name="new_job_class" placeholder="مثال: تدريسي">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">العنوان الوظيفي الجديد</label>
+                            <input type="text" class="form-control" name="new_job_title" placeholder="مثال: مدرس مساعد">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">الشهادة العلمية الجديدة</label>
+                            <input type="text" class="form-control" name="new_academic_degree" placeholder="مثال: ماجستير" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    سيتم تقليص مدة الاستحقاق بـ 12 شهر (Step) وتحديث بيانات الموظف تلقائياً
+                </div>
+            `;
+            break;
+            
+        case 'unpaid_leave':
+        case 'disability_care_leave':
+        case 'five_year_leave':
+        case 'maternity_leave':
+            html = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">تاريخ الانفكاك <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="leave_start_date" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">تاريخ المباشرة <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="leave_end_date" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-pause-circle me-2"></i>
+                    سيتم تجميد احتساب مدة الخدمة خلال فترة الإجازة
+                </div>
+            `;
+            break;
+            
+        case 'custom_event':
+            html = `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">نوع التعديل <span class="text-danger">*</span></label>
+                            <select class="form-select" name="adjustment_type" required>
+                                <option value="">اختر نوع التعديل</option>
+                                <option value="add">إضافة مدة</option>
+                                <option value="subtract">طرح مدة</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="specific-field">
+                            <label class="form-label">عدد الأشهر <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="custom_months" min="1" max="60" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    يرجى إدخال سبب التعديل في حقل الملاحظات (إلزامي للأحداث المخصصة)
+                </div>
+            `;
+            break;
+            
+        default:
+            html = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    سيتم تطبيق التأثير المحدد مسبقاً لهذا النوع من الأحداث
+                </div>
+            `;
+    }
+    
+    content.innerHTML = html;
+}
+
+// التحقق من صحة النموذج قبل الإرسال
+document.getElementById('addEventForm').addEventListener('submit', function(e) {
+    const selectedEmployees = document.querySelectorAll('.employee-checkbox:checked');
+    const eventType = document.getElementById('event_type').value;
+    
+    if (selectedEmployees.length === 0) {
+        e.preventDefault();
+        alert('يرجى تحديد موظف واحد على الأقل');
+        return false;
+    }
+    
+    if (!eventType) {
+        e.preventDefault();
+        alert('يرجى اختيار نوع الحدث');
+        return false;
+    }
+    
+    // التحقق من الملاحظات للأحداث المخصصة
+    if (eventType === 'custom_event') {
+        const notes = document.getElementById('notes').value.trim();
+        if (!notes) {
+            e.preventDefault();
+            alert('الملاحظات إلزامية للأحداث المخصصة');
+            return false;
+        }
+    }
+    
+    // إظهار رسالة تحميل
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الحفظ...';
+    submitBtn.disabled = true;
+    
+    return true;
+});
+</script>
+{% endblock %}
+
